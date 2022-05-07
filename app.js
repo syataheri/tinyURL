@@ -14,7 +14,7 @@ app.use(express.json());
 const urlRouter = require("./controller/url");
 const authRouter = require("./controller/auth");
 const getOriginalUrlRouter = require("./controller/getOriginalUrl");
-const errorRouter = require("./error");
+const errorRouter = require("./errorMiddleware");
 
 //connect to mongoDB
 const connectDB = require("./config/db").connectDB;

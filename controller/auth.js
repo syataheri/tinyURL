@@ -56,7 +56,7 @@ router.post(
     if (result.statusCode) {
       return next(result);
     }
-    return res.status(process.env.CREATED).json({
+    return res.status(+process.env.CREATED).json({
       message: "user successfully created now you can login with it!",
       user: result,
     });
@@ -99,7 +99,7 @@ router.post("/login", async (req, res, next) => {
   if (result.statusCode) {
     return next(result);
   }
-  return res.status(process.env.OK).json({
+  return res.status(+process.env.OK).json({
     message: "Congrats your in",
     token: result,
   });
