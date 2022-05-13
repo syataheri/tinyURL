@@ -1,59 +1,92 @@
-
+const { ServerError, UrlNotFoundError, ForbiddenError } = require('../exceptions');
 const Url = require("../models/url");
 const utils = require("./utils");
 
 module.exports = class mongoDBFn {
 
-    static async FindURLByLongUrl(longUrl) {
+    static async findURLByLongUrl(longUrl) {
         try {
             const url = await Url.findOne({ longUrl });
             return url;
         } catch (error) {
-            const err = await new SERVER_ERROR();
-            err.data = error.message;
-            return err;
+            throw new ServerError(error);
         }
     }
 
     static async createURL(longUrl, userId) {
         try {
-            const urlCode = await utils.createCode();
+            const urlCode = await utils.createCode(longUrl);
+            let url = await Url.findOne({ urlCode });
+            while (true) {
+                url = await Url.findOne({ urlCode });
+                if (!url) {
+                    break;
+                }
+            }
             const baseUrl = process.env.BASE_URL;
             const shortUrl = baseUrl + "/" + urlCode;
-            const url = new Url({ longUrl, shortUrl, urlCode, userId });
+            url = new Url({ longUrl, shortUrl, urlCode, userId });
             await url.save();
             return url;
         } catch (error) {
-            const err = await new SERVER_ERROR();
-            err.data = error.message;
-            return err;
+            throw new ServerError(error);
         }
     }
 
     static async getUserURLs(userId) {
         try {
             const urls = await Url.find({ userId });
-            if (urls) {
-                return urls;
+            if (!urls) {
+                throw -1;
             }
-            return 0;
+            return urls;
         } catch (error) {
-            const err = await new SERVER_ERROR();
-            err.data = error.message;
-            return err;
-        }
+            switch(error){
+                case -1:
+                    throw new UrlNotFoundError();
+                default:
+                    throw new ServerError(error);
+            }        }
     }
 
     static async deleteUrl(code, userId) {
-        let url = await Url.find({ urlCode: code });
-        url = url[0];
-        if (!url) {
-            return 0;
+        try {
+
+            let url = await Url.find({ urlCode: code });
+            url = url[0];
+            if (!url) {
+                throw -1;
+            }
+            if (url.userId.toString() !== userId) {
+                throw 0;
+            }
+            await url.remove();
+        } catch (error) {
+            switch(error){
+                case -1:
+                    throw new UrlNotFoundError();
+                case 0:
+                    throw new ForbiddenError();
+                default:
+                    throw new ServerError(error);
+            }
         }
-        if (url.userId.toString() !== userId) {
-            return -1;
+    }
+
+    static async findURLByCode(urlCode) {
+        try {
+            const url = await Url.findOne({ urlCode });
+            if (!url) {
+                throw -1;
+            }
+            return url;
+        } catch (error) {
+            switch(error){
+                case -1:
+                    throw new UrlNotFoundError();
+                default:
+                    throw new ServerError(error);
+            }
         }
-        await url.remove();
-        return 1;
     }
 }

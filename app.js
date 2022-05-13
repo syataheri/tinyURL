@@ -17,8 +17,13 @@ const getOriginalUrlRouter = require("./controller/getOriginalUrl");
 const errorRouter = require("./errorMiddleware");
 
 //connect to mongoDB
+const { ServerError } = require("./exceptions");
 const connectDB = require("./config/db").connectDB;
-connectDB();
+try{
+  connectDB();
+}catch(err){
+  throw new ServerError(err);
+}
 
 // swagger requires
 const swaggerUI = require("swagger-ui-express");

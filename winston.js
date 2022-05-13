@@ -3,15 +3,9 @@ const winston = require('winston');
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.json(),
-    defaultMeta: { service: 'user-service' },
+    defaultMeta: { service: 'url-shortner' },
     transports: [
-
-        new winston.transports.File({ filename: 'errors/error.log', level: 'error' }),
-        new winston.transports.File({ filename: 'errors/warn.log', level: 'warning' }),
-        new winston.transports.File({ filename: 'errors/combined.log', level: 'silly' }),
-        new winston.transports.File({ filename: 'errors/not-found.log', level: 'info' }),
-
-        new winston.transports.Console({ format: winston.format.simple(), }),
+        new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
     ],
 });
 

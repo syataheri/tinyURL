@@ -2,7 +2,7 @@ const { body, validationResult } = require("express-validator");
 const express = require("express");
 
 const AuthService = require("../auth/auth.services.js");
-const { NOTVALID } = require("../exceptions");
+const { NotValidError } = require("../exceptions");
 
 const router = express.Router();
 
@@ -17,14 +17,11 @@ const router = express.Router();
  *           schema:
  *             type: objetc
  *             properties:
- *               username:
- *                 type: string
  *               email:
  *                 type: string
  *               password:
  *                 type: string
  *             example:
- *               username: syamak 
  *               email: sya@gmail.com
  *               password: 1234@St2
  *     responses:
@@ -35,7 +32,7 @@ const router = express.Router();
 */
 
 router.post(
-  "/signin",
+  "/signup",
   [
     body("email").isEmail().withMessage("enterd value shoud be type of email"),
     body("password").isStrongPassword().withMessage("Password should be 8 character combination of number, letter and symbol")
@@ -43,23 +40,20 @@ router.post(
   async (req, res, next) => {
     const error = validationResult(req);
 
-    if (!error.isEmpty()) {
-      const err = await new NOTVALID();
-      err.data = error.array();
-      return next(err);
-    }
+    try {
+      if (!error.isEmpty()) {
+        throw new NotValidError(error.array());
+      }
 
-    const { email, password } = req.body;
-    const authService = new AuthService(email, password);
-    const result = await authService.singin();
-
-    if (result.statusCode) {
-      return next(result);
+      const { email, password } = req.body;
+      const authService = new AuthService(email, password);
+      await authService.singin();
+      return res.status(201).json({
+        message: "user successfully created now you can login with it!",
+      });
+    } catch (err) {
+      next(err);
     }
-    return res.status(+process.env.CREATED).json({
-      message: "user successfully created now you can login with it!",
-      user: result,
-    });
   }
 );
 
@@ -94,15 +88,18 @@ router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 
   const authService = new AuthService(email, password);
-  const result = await authService.login();
+  try {
+    const result = await authService.login();
 
-  if (result.statusCode) {
-    return next(result);
-  }
-  return res.status(+process.env.OK).json({
-    message: "Congrats your in",
-    token: result,
-  });
+    if (result.statusCode) {
+      return next(result);
+    }
+    return res.status(200).json({
+      message: "Congrats your in",
+      token: result,
+    });
+  } catch (err) { next(err); }
+
 });
 
 module.exports = router;

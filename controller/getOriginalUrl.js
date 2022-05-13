@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const GetOrininalUrlService = require("../getOriginalURL/getOriginalURL.services");
+const UrlService = require("../url/url.services");
 
 /**
 * @swagger
@@ -18,13 +18,14 @@ const GetOrininalUrlService = require("../getOriginalURL/getOriginalURL.services
 router.get("/:code", async (req, res, next) => {
   const code = req.params.code;
 
-  const getOriginalURLService = new GetOrininalUrlService();
-  const reslut = await getOriginalURLService.redirect(code);
+  const urlService = new UrlService();
+  try {
+    const reslut = await urlService.redirect(code);
 
-  if (reslut.statusCode) {
-    return next(reslut);
+    return res.status(200).redirect(reslut);
+  } catch (error) {
+    next(error);
   }
-  return res.status(process.env.OK).redirect(reslut);
 });
 
 module.exports = router;

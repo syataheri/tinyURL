@@ -1,4 +1,4 @@
-
+const { ServerError } = require("../exceptions");
 const User = require("../models/user");
 const utils = require("./utils");
 
@@ -9,9 +9,7 @@ module.exports = class mongoDBFn {
             const user = await User.findOne({ email: email });
             return user;
         } catch (error) {
-            const err = await new SERVER_ERROR();
-            err.data = error.message;
-            return err;
+            throw new ServerError(error);
         }
     }
 
@@ -22,9 +20,7 @@ module.exports = class mongoDBFn {
             await user.save();
             return user;
         } catch (error) {
-            const err = await new SERVER_ERROR();
-            err.data = error.message;
-            return err;
+            throw new ServerError(error);
         }
     }
 
@@ -40,9 +36,7 @@ module.exports = class mongoDBFn {
             }
             return 0;
         } catch (error) {
-            const err = await new SERVER_ERROR();
-            err.data = error.message;
-            return err;
+            throw new ServerError(error);
         }
     }
 }
