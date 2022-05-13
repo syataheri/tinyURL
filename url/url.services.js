@@ -1,5 +1,6 @@
 const UrlRepositoryMongo = require('./url.repository.mongodb');
-const { UrlNotFound, FORBIDDEN } = require('../exceptions');
+const { UrlNotFoundError, ForbiddenError } = require('../exceptions');
+const url = require('../models/url');
 
 module.exports = class UrlService {
 
@@ -8,7 +9,7 @@ module.exports = class UrlService {
 
     async createShortURL(longUrl, userId) {
 
-        let url = await UrlRepositoryMongo.FindURLByLongUrl(longUrl);
+        let url = await UrlRepositoryMongo.findURLByLongUrl(longUrl);
         if (url) {
             return url;
         }
@@ -17,22 +18,16 @@ module.exports = class UrlService {
     }
 
     async getUserURLs(userId) {
-        const urls = await UrlRepositoryMongo.getUserURLs(userId);
-        if (!urls) {
-            return await new UrlNotFound();
-        }
-        return urls;
+        return await UrlRepositoryMongo.getUserURLs(userId);
     }
 
     async deleteURL(code, userId) {
-        const url = await UrlRepositoryMongo.deleteUrl(code, userId);
-        if (url === 0) {
-            return await new UrlNotFound();
-        }
-        if (url === -1) {
-            return await new FORBIDDEN();
-        }
-        return url;
+        return await UrlRepositoryMongo.deleteUrl(code, userId);
+
+    }
+
+    async redirect(code) {
+        return await UrlRepositoryMongo.findURLByCode(code);
     }
 }
 

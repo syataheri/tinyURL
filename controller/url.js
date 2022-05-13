@@ -3,7 +3,7 @@ const { body, validationResult } = require("express-validator");
 
 const URLService = require("../url/url.services.js");
 const isAuth = require("../middleware/is-auth");
-const { NOTVALID } = require("../exceptions");
+const { NotValidError } = require("../exceptions");
 
 const router = express.Router();
 
@@ -40,19 +40,21 @@ router.post(
   body("longUrl").isURL().withMessage("you have to enter valid url"),
   async (req, res, next) => {
     const error = validationResult(req);
-    if (!error.isEmpty()) {
-      const err = await new NOTVALID();
-      err.data = error.array();
-      return next(err);
+    try {
+      if (!error.isEmpty()) {
+        throw new NotValidError(error.array());
+      }
+      const { longUrl } = req.body;
+
+      const urlService = new URLService();
+      const userId = req.userId;
+      const result = await urlService.createShortURL(longUrl, userId);
+
+      return res.status(201).json({ code: result.urlCode, shortUrl: result.shortUrl });
+    } catch (error) {
+      next(error);
     }
-    const { longUrl } = req.body;
-    const urlService = new URLService();
-    const userId = req.userId;
-    const result = await urlService.createShortURL(longUrl, userId);
-    if (result.statusCode) {
-      return next(result);
-    }
-    return res.status(+process.env.CREATED).json(result);
+
   });
 
 
@@ -75,11 +77,12 @@ router.post(
 
 router.get("/", isAuth, async (req, res, next) => {
   const urlService = new URLService();
-  const result = await urlService.getUserURLs(req.userId);
-  if (result.statusCode) {
-    return next(result);
+  try {
+    const result = await urlService.getUserURLs(req.userId);
+    return res.status(200).json({ code: result.urlCode, shortUrl: result.shortUrl });
+  } catch (error) {
+    next(error);
   }
-  return res.status(+process.env.OK).json(result);
 });
 
 
@@ -103,11 +106,13 @@ router.get("/", isAuth, async (req, res, next) => {
 router.delete("/delete/:code", isAuth, async (req, res, next) => {
   const code = req.params.code;
   const urlService = new URLService();
-  const result = await urlService.deleteURL(code, req.userId);
-  if (result.statusCode) {
-    return next(result);
+  try {
+
+    await urlService.deleteURL(code, req.userId);
+    res.status(202).json({ message: "URL deleted!" });
+  } catch (error) {
+    next(error);
   }
-  res.status(+process.env.ACCEPTED).json({ message: "URL deleted!" });
 
 });
 

@@ -10,53 +10,55 @@ class BaseError extends Error {
 }
 
 class EmailDuplicateError extends BaseError {
-    constructor(name = "CONFLICT", statusCode = +process.env.CONFLICT, description = 'email address already exist, try login with it.') {
-        super(name, statusCode, description);
+    constructor() {
+        super("CONFLICT", 409, 'email address already exist, try login with it.');
     }
 }
 
-class EmailOrPasswordWrong extends BaseError {
-    constructor(name = "NOT FOUND", statusCode = +process.env.NOT_FOUND, description = 'email or password is wrong.') {
-        super(name, statusCode, description);
+class EmailOrPasswordWrongError extends BaseError {
+    constructor() {
+        super("NOT FOUND", 404, 'email or password is wrong.');
     }
 }
 
-class UrlNotFound extends BaseError {
-    constructor(name = "NOT FOUND", statusCode = +process.env.NOT_FOUND, description = 'No URL found') {
-        super(name, statusCode, description);
+class UrlNotFoundError extends BaseError {
+    constructor() {
+        super("NOT FOUND", 404, 'No URL found');
     }
 }
 
-class NotAuthorized extends BaseError {
-    constructor(name = "NOT Authorized", statusCode = +process.env.UNAUTHORIZED, description = 'Not Authorized') {
-        super(name, statusCode, description);
+class NotAuthorizedError extends BaseError {
+    constructor() {
+        super("UNAUTHORIZED", 401, 'Not Authorized');
     }
 }
 
-class NOTVALID extends BaseError {
-    constructor(name = "NOT VALID", statusCode = +process.env.NOT_VALID, description = 'Data not found') {
-        super(name, statusCode, description);
+class NotValidError extends BaseError {
+    constructor(data) {
+        super("NOT VALID", 406, 'Invalid data');
+        this.data = data;
     }
 }
 
-class FORBIDDEN extends BaseError {
-    constructor(name = "FORBIDDEN", statusCode = +process.env.FORBIDDEN, description = 'Forbidden! This is not allowed!') {
-        super(name, statusCode, description);
+class ForbiddenError extends BaseError {
+    constructor() {
+        super("FORBIDDEN", 403, 'Forbidden! This is not allowed!');
     }
 }
 
-class SERVER_ERROR extends BaseError {
-    constructor(name = "SERVER_ERROR", statusCode = +process.env.SERVER_ERROR, description = 'this is happend in server side...!') {
-        super(name, statusCode, description);
+class ServerError extends BaseError {
+    constructor(data) {
+        super("SERVER_ERROR", 500, 'this is happend in server side...!');
+        this.data = data;
     }
 }
 
 module.exports = {
     EmailDuplicateError,
-    EmailOrPasswordWrong,
-    UrlNotFound,
-    NotAuthorized,
-    FORBIDDEN,
-    NOTVALID,
-    SERVER_ERROR
+    EmailOrPasswordWrongError,
+    UrlNotFoundError,
+    NotAuthorizedError,
+    ForbiddenError,
+    NotValidError,
+    ServerError
 }

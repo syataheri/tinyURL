@@ -1,5 +1,5 @@
 const AuthRepositoryMongo = require('./auth.repository.mongodb');
-const { EmailDuplicateError, EmailOrPasswordWrong } = require('../exceptions');
+const { EmailDuplicateError, EmailOrPasswordWrongError } = require('../exceptions');
 
 module.exports = class AuthService {
 
@@ -11,7 +11,7 @@ module.exports = class AuthService {
     async singin() {
         let user = await AuthRepositoryMongo.findUserByEmail(this.email);
         if (user) {
-            return await new EmailDuplicateError();
+            throw new EmailDuplicateError();
         }
         user = await AuthRepositoryMongo.createUser(this.email, this.password);
         return user;
@@ -20,7 +20,7 @@ module.exports = class AuthService {
     async login() {
         const user = await AuthRepositoryMongo.checkEmailAndPassword(this.email, this.password);
         if (!user) {
-            return await new EmailOrPasswordWrong();
+            throw new EmailOrPasswordWrongError();
         }
         return user;
     }
