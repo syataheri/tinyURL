@@ -1,33 +1,35 @@
-const UrlRepositoryMongo = require('./url.repository.mongodb');
-const { UrlNotFoundError, ForbiddenError } = require('../exceptions');
-const url = require('../models/url');
+import { UrlDataAccess } from './url.repository.mongodb.js';
 
-module.exports = class UrlService {
+class UrlService {
 
     constructor() {
+        this.urlDataAccess = new UrlDataAccess;
     }
 
     async createShortURL(longUrl, userId) {
 
-        let url = await UrlRepositoryMongo.findURLByLongUrl(longUrl);
+        let url = await this.urlDataAccess.findURLByLongUrl(longUrl);
         if (url) {
             return url;
         }
-        url = await UrlRepositoryMongo.createURL(longUrl, userId);
+        url = await this.urlDataAccess.createURL(longUrl, userId);
+        console.log(url+"*******");
+        console.log(url);
         return url;
     }
 
     async getUserURLs(userId) {
-        return await UrlRepositoryMongo.getUserURLs(userId);
+        return await this.urlDataAccess.getUserURLs(userId);
     }
 
     async deleteURL(code, userId) {
-        return await UrlRepositoryMongo.deleteUrl(code, userId);
+        return await this.urlDataAccess.deleteUrl(code, userId);
 
     }
 
     async redirect(code) {
-        return await UrlRepositoryMongo.findURLByCode(code);
+        return await this.urlDataAccess.findURLByCode(code);
     }
 }
 
+export { UrlService }

@@ -1,8 +1,8 @@
 // importing logger from winston
 
-const logger = require('./winston');
+import {logger} from './winston.js';
 
-module.exports = (error, req, res, next) => {
+const errorRouter = (error, req, res, next) => {
     const status = error.statusCode;
     const message = error.message;
     const data = error.data;
@@ -14,3 +14,5 @@ module.exports = (error, req, res, next) => {
         data: data,
     });
 }
+
+export { errorRouter };

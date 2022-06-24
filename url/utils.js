@@ -1,5 +1,7 @@
-const shortid = require("shortid");
+import { nanoid } from 'nanoid/non-secure'
 
-exports.createCode = () => {
-    return urlCode = shortid.generate();
+const createCode = () => {
+    return nanoid();
 }
+
+export {createCode}

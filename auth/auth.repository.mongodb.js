@@ -1,10 +1,11 @@
-const { ServerError } = require("../exceptions");
-const User = require("../models/user");
-const utils = require("./utils");
+import { ServerError, EmailOrPasswordWrongError } from "../exceptions.js";
+import { User } from "../models/user.js";
+import { hashPassword, comparePassword, creatToken } from "./utils.js";
 
-module.exports = class mongoDBFn {
+class UserDataAccess {
 
-    static async findUserByEmail(email) {
+
+    async findUserByEmail(email) {
         try {
             const user = await User.findOne({ email: email });
             return user;
@@ -13,9 +14,9 @@ module.exports = class mongoDBFn {
         }
     }
 
-    static async createUser(email, password) {
+    async createUser(email, password) {
         try {
-            const hashedPassword = await utils.hashPassword(password);
+            const hashedPassword = await hashPassword(password);
             const user = new User({ email, password: hashedPassword });
             await user.save();
             return user;
@@ -24,19 +25,21 @@ module.exports = class mongoDBFn {
         }
     }
 
-    static async checkEmailAndPassword(email, password) {
+    async checkEmailAndPassword(email, password) {
         try {
             const user = await User.findOne({ email: email });
             if (user) {
-                const passwordCheck = await utils.comparePassword(password, user.password);
+                const passwordCheck = await comparePassword(password, user.password);
                 if (passwordCheck) {
-                    const token = utils.creatToken({ email, userId: user._id.toString() });
+                    const token = creatToken({ email, userId: user._id.toString() });
                     return token;
                 }
             }
-            return 0;
+            throw new EmailOrPasswordWrongError;
         } catch (error) {
             throw new ServerError(error);
         }
     }
 }
+
+export { UserDataAccess };

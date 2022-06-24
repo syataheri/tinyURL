@@ -1,11 +1,11 @@
-const express = require("express");
-const { body, validationResult } = require("express-validator");
+import express from "express";
+import { body, validationResult } from "express-validator";
 
-const URLService = require("../url/url.services.js");
-const isAuth = require("../middleware/is-auth");
-const { NotValidError } = require("../exceptions");
+import { UrlService } from "../url/url.services.js";
+import { isAuth } from "../middleware/is-auth.js";
+import { NotValidError } from "../exceptions.js";
 
-const router = express.Router();
+const urlRouter = express.Router();
 
 
 /**
@@ -34,7 +34,7 @@ const router = express.Router();
  *         description: You have to enter valid URL!
 */
 
-router.post(
+urlRouter.post(
   "/shorten",
   isAuth,
   body("longUrl").isURL().withMessage("you have to enter valid url"),
@@ -46,10 +46,10 @@ router.post(
       }
       const { longUrl } = req.body;
 
-      const urlService = new URLService();
+      const urlService = new UrlService;
       const userId = req.userId;
       const result = await urlService.createShortURL(longUrl, userId);
-
+      console.log(result)
       return res.status(201).json({ code: result.urlCode, shortUrl: result.shortUrl });
     } catch (error) {
       next(error);
@@ -75,8 +75,8 @@ router.post(
 */
 
 
-router.get("/", isAuth, async (req, res, next) => {
-  const urlService = new URLService();
+urlRouter.get("/", isAuth, async (req, res, next) => {
+  const urlService = new UrlService();
   try {
     const result = await urlService.getUserURLs(req.userId);
     return res.status(200).json({ code: result.urlCode, shortUrl: result.shortUrl });
@@ -103,9 +103,9 @@ router.get("/", isAuth, async (req, res, next) => {
  *         description: URL not found!
 */
 
-router.delete("/delete/:code", isAuth, async (req, res, next) => {
+urlRouter.delete("/delete/:code", isAuth, async (req, res, next) => {
   const code = req.params.code;
-  const urlService = new URLService();
+  const urlService = new UrlService();
   try {
 
     await urlService.deleteURL(code, req.userId);
@@ -116,4 +116,4 @@ router.delete("/delete/:code", isAuth, async (req, res, next) => {
 
 });
 
-module.exports = router;
+export { urlRouter };
