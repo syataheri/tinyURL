@@ -1,8 +1,8 @@
-const express = require("express");
+import express from "express";
 
-const router = express.Router();
+import { UrlService } from "../url/url.services.js";
 
-const UrlService = require("../url/url.services");
+const getOriginalUrlRouter = express.Router();
 
 /**
 * @swagger
@@ -15,7 +15,7 @@ const UrlService = require("../url/url.services");
 *         description: Get a long URL.
 */
 
-router.get("/:code", async (req, res, next) => {
+getOriginalUrlRouter.get("/:code", async (req, res, next) => {
   const code = req.params.code;
 
   const urlService = new UrlService();
@@ -28,4 +28,4 @@ router.get("/:code", async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export { getOriginalUrlRouter };

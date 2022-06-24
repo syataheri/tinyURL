@@ -1,10 +1,10 @@
-const { ServerError, UrlNotFoundError, ForbiddenError } = require('../exceptions');
-const Url = require("../models/url");
-const utils = require("./utils");
+import { ServerError, UrlNotFoundError, ForbiddenError } from '../exceptions.js';
+import {Url} from "../models/url.js";
+import {createCode} from "./utils.js";
 
-module.exports = class mongoDBFn {
+class UrlDataAccess {
 
-    static async findURLByLongUrl(longUrl) {
+    async findURLByLongUrl(longUrl) {
         try {
             const url = await Url.findOne({ longUrl });
             return url;
@@ -13,9 +13,10 @@ module.exports = class mongoDBFn {
         }
     }
 
-    static async createURL(longUrl, userId) {
+    async createURL(longUrl, userId) {
         try {
-            const urlCode = await utils.createCode(longUrl);
+            const urlCode = await createCode(longUrl);
+
             let url = await Url.findOne({ urlCode });
             while (true) {
                 url = await Url.findOne({ urlCode });
@@ -33,7 +34,7 @@ module.exports = class mongoDBFn {
         }
     }
 
-    static async getUserURLs(userId) {
+    async getUserURLs(userId) {
         try {
             const urls = await Url.find({ userId });
             if (!urls) {
@@ -49,7 +50,7 @@ module.exports = class mongoDBFn {
             }        }
     }
 
-    static async deleteUrl(code, userId) {
+    async deleteUrl(code, userId) {
         try {
 
             let url = await Url.find({ urlCode: code });
@@ -73,13 +74,13 @@ module.exports = class mongoDBFn {
         }
     }
 
-    static async findURLByCode(urlCode) {
+    async findURLByCode(urlCode) {
         try {
             const url = await Url.findOne({ urlCode });
             if (!url) {
                 throw -1;
             }
-            return url;
+            return url.longUrl;
         } catch (error) {
             switch(error){
                 case -1:
@@ -90,3 +91,5 @@ module.exports = class mongoDBFn {
         }
     }
 }
+
+export {UrlDataAccess}

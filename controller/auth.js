@@ -1,10 +1,10 @@
-const { body, validationResult } = require("express-validator");
-const express = require("express");
+import { body, validationResult } from "express-validator";
+import express from "express";
 
-const AuthService = require("../auth/auth.services.js");
-const { NotValidError } = require("../exceptions");
+import { AuthService } from "../auth/auth.services.js";
+import { NotValidError } from "../exceptions.js";
 
-const router = express.Router();
+const authRouter = express.Router();
 
 /**
  * @swagger
@@ -31,7 +31,7 @@ const router = express.Router();
  *         description: You have to enter valid values!
 */
 
-router.post(
+authRouter.post(
   "/signup",
   [
     body("email").isEmail().withMessage("enterd value shoud be type of email"),
@@ -84,7 +84,7 @@ router.post(
  *       422:
  *         description: You have to enter valid email or password!
 */
-router.post("/login", async (req, res, next) => {
+authRouter.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 
   const authService = new AuthService(email, password);
@@ -102,4 +102,4 @@ router.post("/login", async (req, res, next) => {
 
 });
 
-module.exports = router;
+export { authRouter };

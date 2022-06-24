@@ -1,9 +1,11 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+
+dotenv.config();
 
 
 // requiring the express for the middlewares
 
-const express = require("express");
+import express from "express";
 const app = express();
 
 
@@ -11,23 +13,24 @@ app.use(express.json());
 
 
 //importing routes
-const urlRouter = require("./controller/url");
-const authRouter = require("./controller/auth");
-const getOriginalUrlRouter = require("./controller/getOriginalUrl");
-const errorRouter = require("./errorMiddleware");
+import { urlRouter } from "./controller/url.js";
+import { authRouter } from "./controller/auth.js";
+import { getOriginalUrlRouter } from "./controller/getOriginalUrl.js";
+import { errorRouter } from "./errorMiddleware.js";
 
-//connect to mongoDB
-const { ServerError } = require("./exceptions");
-const connectDB = require("./config/db").connectDB;
-try{
+//connect to mongoD
+import { ServerError } from "./exceptions.js";
+
+import { connectDB } from "./config/db.js";
+try {
   connectDB();
-}catch(err){
+} catch (err) {
   throw new ServerError(err);
 }
 
 // swagger requires
-const swaggerUI = require("swagger-ui-express");
-const swaggerDocs = require("./swagger");
+import swaggerUI from "swagger-ui-express";
+import { swaggerDocs } from "./swagger.js";
 
 // passing the Routers to middleware
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
@@ -41,4 +44,4 @@ app.listen(process.env.PORT, () => {
   console.log(`server is runing on port ${process.env.PORT}`);
 });
 
-module.exports = app;
+export { app };

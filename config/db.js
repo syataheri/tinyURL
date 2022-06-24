@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-exports.connectDB = async () => {
+const connectDB = async () => {
   try {
     if (process.env.NODE_ENV !== 'production') {
       await mongoose.connect(process.env.MONGO_TEST_URL ,{useNewUrlParser: true,
@@ -13,3 +13,5 @@ exports.connectDB = async () => {
     throw error;
   }
 };
+
+export {connectDB};

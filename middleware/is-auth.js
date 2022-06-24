@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
-const { NotAuthorizedError } = require("../exceptions");
+import jwt from "jsonwebtoken";
+import { NotAuthorizedError } from "../exceptions.js";
 
-module.exports = async (req, res, next) => {
+ const isAuth = async(req, res, next) => {
   try {
     
     jwt.verify(req.get("Authorization").split(" ")[1], process.env.JWT_SECRET_KEY, (err, decoded) => {
@@ -16,3 +16,5 @@ module.exports = async (req, res, next) => {
     next(new NotAuthorizedError());
   }
 };
+
+export {isAuth};
