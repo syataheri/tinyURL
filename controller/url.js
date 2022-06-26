@@ -2,8 +2,8 @@ import express from "express";
 import { body, validationResult } from "express-validator";
 
 import { UrlService } from "../url/url.services.js";
-import { isAuth } from "../middleware/is-auth.js";
-import { NotValidError } from "../exceptions.js";
+import { isAuthMiddleware } from "../middleware/is-auth.js";
+import { urlValidationMiddleware } from "./validation.js";
 
 const urlRouter = express.Router();
 
@@ -36,14 +36,11 @@ const urlRouter = express.Router();
 
 urlRouter.post(
   "/shorten",
-  isAuth,
-  body("longUrl").isURL().withMessage("you have to enter valid url"),
+  isAuthMiddleware,
+  urlValidationMiddleware,
   async (req, res, next) => {
-    const error = validationResult(req);
     try {
-      if (!error.isEmpty()) {
-        throw new NotValidError(error.array());
-      }
+
       const { longUrl } = req.body;
 
       const urlService = new UrlService;
@@ -75,7 +72,7 @@ urlRouter.post(
 */
 
 
-urlRouter.get("/", isAuth, async (req, res, next) => {
+urlRouter.get("/", isAuthMiddleware, async (req, res, next) => {
   const urlService = new UrlService();
   try {
     const result = await urlService.getUserURLs(req.userId);
@@ -103,7 +100,7 @@ urlRouter.get("/", isAuth, async (req, res, next) => {
  *         description: URL not found!
 */
 
-urlRouter.delete("/delete/:code", isAuth, async (req, res, next) => {
+urlRouter.delete("/delete/:code", isAuthMiddleware, async (req, res, next) => {
   const code = req.params.code;
   const urlService = new UrlService();
   try {

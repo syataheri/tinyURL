@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const connectDB = async () => {
+const connectMongonDB = async () => {
   try {
     if (process.env.NODE_ENV !== 'production') {
       await mongoose.connect(process.env.MONGO_TEST_URL ,{useNewUrlParser: true,
@@ -14,4 +14,4 @@ const connectDB = async () => {
   }
 };
 
-export {connectDB};
+export {connectMongonDB};
