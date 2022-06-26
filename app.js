@@ -21,9 +21,9 @@ import { errorRouter } from "./errorMiddleware.js";
 //connect to mongoD
 import { ServerError } from "./exceptions.js";
 
-import { connectDB } from "./config/db.js";
+import { connectMongonDB } from "./config/db.js";
 try {
-  connectDB();
+  connectMongonDB();
 } catch (err) {
   throw new ServerError(err);
 }
@@ -32,7 +32,7 @@ try {
 import swaggerUI from "swagger-ui-express";
 import { swaggerDocs } from "./swagger.js";
 
-// passing the Routers to middleware
+// passing the Routers to middlewares
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 app.use("/api/url", urlRouter);
 app.use("/api/auth", authRouter);

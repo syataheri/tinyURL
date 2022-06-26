@@ -3,6 +3,7 @@ import express from "express";
 
 import { AuthService } from "../auth/auth.services.js";
 import { NotValidError } from "../exceptions.js";
+import { signupValidationMiddleware } from "./validation.js";
 
 const authRouter = express.Router();
 
@@ -33,17 +34,10 @@ const authRouter = express.Router();
 
 authRouter.post(
   "/signup",
-  [
-    body("email").isEmail().withMessage("enterd value shoud be type of email"),
-    body("password").isStrongPassword().withMessage("Password should be 8 character combination of number, letter and symbol")
-  ],
+  signupValidationMiddleware,
   async (req, res, next) => {
-    const error = validationResult(req);
 
     try {
-      if (!error.isEmpty()) {
-        throw new NotValidError(error.array());
-      }
 
       const { email, password } = req.body;
       const authService = new AuthService(email, password);

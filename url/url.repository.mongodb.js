@@ -1,6 +1,6 @@
 import { ServerError, UrlNotFoundError, ForbiddenError } from '../exceptions.js';
-import {Url} from "../models/url.js";
-import {createCode} from "./utils.js";
+import { Url } from "../models/url.js";
+import { createCode } from "./utils.js";
 
 class UrlDataAccess {
 
@@ -42,12 +42,13 @@ class UrlDataAccess {
             }
             return urls;
         } catch (error) {
-            switch(error){
+            switch (error) {
                 case -1:
                     throw new UrlNotFoundError();
                 default:
                     throw new ServerError(error);
-            }        }
+            }
+        }
     }
 
     async deleteUrl(code, userId) {
@@ -63,7 +64,7 @@ class UrlDataAccess {
             }
             await url.remove();
         } catch (error) {
-            switch(error){
+            switch (error) {
                 case -1:
                     throw new UrlNotFoundError();
                 case 0:
@@ -82,7 +83,7 @@ class UrlDataAccess {
             }
             return url.longUrl;
         } catch (error) {
-            switch(error){
+            switch (error) {
                 case -1:
                     throw new UrlNotFoundError();
                 default:
@@ -92,4 +93,4 @@ class UrlDataAccess {
     }
 }
 
-export {UrlDataAccess}
+export { UrlDataAccess }
