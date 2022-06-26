@@ -13,8 +13,6 @@ class UrlService {
             return url;
         }
         url = await this.urlDataAccess.createURL(longUrl, userId);
-        console.log(url+"*******");
-        console.log(url);
         return url;
     }
 

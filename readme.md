@@ -3,7 +3,7 @@ Node URL Shortener API
 
 ## Used Tools
 
-Shortid for generating code for URL's
+nanoId for generating code for URL's
 Winston Logger
 Swagger and Document is available
 Jest and Supertest for End to end testing.
