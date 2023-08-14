@@ -1,32 +1,32 @@
-# tinyUrl
+# TINY URL 🚀
 Node URL Shortener API
 
-## Used Tools
+## USED TOOLS
 
-nanoId for generating code for URL's
+nanoId for generating code for URLs
 Winston Logger
-Swagger and Document is available
+Swagger and Document are available
 Jest and Supertest for End to end testing.
-bcryptjs for hashing the password for more security.
-mongodb for storing user and url's.
+Bcryptjs for hashing the password for more security.
+MongoDB for storing users and URLs.
 
-## How run it?
+## HOW TO RUN IT?
 
-### preinstall
+### PREINSTALL
 
-for installing all dependencies open terminal in that directory run :
+for installing all dependencies open the terminal in that directory and run :
 npm install
 
-### run it
-open terminal in that directory and run:
+### RUN IT
+open the terminal in that directory and run:
 npm start
 
 ## TEST
 
-open terminal in that directory and run:
+open the terminal in that directory and run:
 npm test
 
-## End points
+## Endpoints
 
 ### USER SIGNUP
 
@@ -41,7 +41,7 @@ POST /api/auth/signup
  #### result
 
 {
-    "message": "user successfully created now you can login with it!",
+    "message": "user successfully created now you can log in with it!",
 }
 
 ### USER LOGIN
@@ -81,7 +81,7 @@ Headers:{
     "shortUrl": "generated short url",
 }
 
-### GET USER URL's
+### GET USER URLs
 
 POST /api/url/
 
@@ -116,13 +116,13 @@ Headers:{
     "message": "URL deleted!"
 }
 
-### RIDIRECT TO ORIGINAL URL
+### REDIRECT TO ORIGINAL URL
 
 GET /:code
 
 #### result
 
-Ridirect to original URL.
+Redirect to the original URL.
 
 ### SwaggerUI
 
@@ -130,16 +130,16 @@ GET /api-docs
 
 #### result
 
-Going to SwaggerUI page.
+Going to the SwaggerUI page.
 
-## some other Info
+## Some other Info
 
 ### log's
 
-It have a folder with error.log file for sever logs.
+It has a folder with an error.log file for server logs.
 
 ## .env file
 
-you shoud rename .env.example to .env and complete it.
-It's need two mongoDB atlas url or local url, one for production data and one for testing.
-You should put your secret for json web token too.
+you should rename .env.example to .env and complete it.
+It needs two mongoDB atlas URLs or local URLs, one for production data and one for testing.
+You should put your secret for the JSON web token too.
