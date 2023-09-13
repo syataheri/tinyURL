@@ -1,7 +1,11 @@
-import { nanoid } from 'nanoid/non-secure'
+const nanoid = require("nanoid/non-secure");
 
 const createCode = () => {
+  try {
     return nanoid();
-}
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-export {createCode}
+module.exports = { createCode };

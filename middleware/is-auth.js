@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
-import { NotAuthorizedError } from "../exceptions.js";
+const jwt  = require( "jsonwebtoken" );
+const { NotAuthorizedError }  = require( "../exceptions.js" );
 
 const isAuthMiddleware = async (req, res, next) => {
   try {
@@ -17,4 +17,4 @@ const isAuthMiddleware = async (req, res, next) => {
   }
 };
 
-export { isAuthMiddleware };
+module.exports = { isAuthMiddleware };

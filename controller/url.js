@@ -1,10 +1,7 @@
-import express from "express";
-import { body, validationResult } from "express-validator";
-
-import { UrlService } from "../url/url.services.js";
-import { isAuthMiddleware } from "../middleware/is-auth.js";
-import { urlValidationMiddleware } from "./validation.js";
-
+const express  = require( "express" );
+const  urlService  = require( "../url/url.services.js" );
+const { isAuthMiddleware }  = require( "../middleware/is-auth.js" );
+const { urlValidationMiddleware }  = require( "./validation.js" );
 const urlRouter = express.Router();
 
 
@@ -43,10 +40,8 @@ urlRouter.post(
 
       const { longUrl } = req.body;
 
-      const urlService = new UrlService;
       const userId = req.userId;
       const result = await urlService.createShortURL(longUrl, userId);
-      console.log(result)
       return res.status(201).json({ code: result.urlCode, shortUrl: result.shortUrl });
     } catch (error) {
       next(error);
@@ -73,10 +68,9 @@ urlRouter.post(
 
 
 urlRouter.get("/", isAuthMiddleware, async (req, res, next) => {
-  const urlService = new UrlService();
   try {
     const result = await urlService.getUserURLs(req.userId);
-    return res.status(200).json({ code: result.urlCode, shortUrl: result.shortUrl });
+    return res.status(200).json({result});
   } catch (error) {
     next(error);
   }
@@ -102,9 +96,7 @@ urlRouter.get("/", isAuthMiddleware, async (req, res, next) => {
 
 urlRouter.delete("/delete/:code", isAuthMiddleware, async (req, res, next) => {
   const code = req.params.code;
-  const urlService = new UrlService();
   try {
-
     await urlService.deleteURL(code, req.userId);
     res.status(202).json({ message: "URL deleted!" });
   } catch (error) {
@@ -113,4 +105,4 @@ urlRouter.delete("/delete/:code", isAuthMiddleware, async (req, res, next) => {
 
 });
 
-export { urlRouter };
+module.exports = { urlRouter };

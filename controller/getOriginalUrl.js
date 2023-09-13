@@ -1,7 +1,5 @@
-import express from "express";
-
-import { UrlService } from "../url/url.services.js";
-
+const express  = require( "express" );
+const urlService  = require( "../url/url.services.js" );
 const getOriginalUrlRouter = express.Router();
 
 /**
@@ -18,14 +16,12 @@ const getOriginalUrlRouter = express.Router();
 getOriginalUrlRouter.get("/:code", async (req, res, next) => {
   const code = req.params.code;
 
-  const urlService = new UrlService();
   try {
     const reslut = await urlService.redirect(code);
-
     return res.status(200).redirect(reslut);
   } catch (error) {
     next(error);
   }
 });
 
-export { getOriginalUrlRouter };
+module.exports = { getOriginalUrlRouter };

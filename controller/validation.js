@@ -1,5 +1,5 @@
-import Joi from "joi";
-import { NotValidError } from "../exceptions.js";
+const Joi  = require( "joi" );
+const { NotValidError }  = require( "../exceptions.js" );
 
 const signupValidationMiddleware = async (req, res, next) => {
     const { email, password } = req.body;
@@ -32,4 +32,4 @@ const urlValidationMiddleware = async (req, res, next) => {
     next();
 }
 
-export { signupValidationMiddleware, urlValidationMiddleware };
+module.exports = { signupValidationMiddleware, urlValidationMiddleware };

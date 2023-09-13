@@ -1,10 +1,6 @@
-import { body, validationResult } from "express-validator";
-import express from "express";
-
-import { AuthService } from "../auth/auth.services.js";
-import { NotValidError } from "../exceptions.js";
-import { signupValidationMiddleware } from "./validation.js";
-
+const express  = require( "express" );
+const authService  = require( "../auth/auth.services.js" );
+const { signupValidationMiddleware }  = require( "./validation.js" );
 const authRouter = express.Router();
 
 /**
@@ -40,8 +36,7 @@ authRouter.post(
     try {
 
       const { email, password } = req.body;
-      const authService = new AuthService(email, password);
-      await authService.singin();
+      await authService.singin(email, password);
       return res.status(201).json({
         message: "user successfully created now you can login with it!",
       });
@@ -81,9 +76,8 @@ authRouter.post(
 authRouter.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 
-  const authService = new AuthService(email, password);
   try {
-    const result = await authService.login();
+    const result = await authService.login(email, password);
 
     if (result.statusCode) {
       return next(result);
@@ -96,4 +90,4 @@ authRouter.post("/login", async (req, res, next) => {
 
 });
 
-export { authRouter };
+module.exports = { authRouter };

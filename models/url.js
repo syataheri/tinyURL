@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose  = require( "mongoose" );
 
 const Schema = mongoose.Schema;
 
@@ -13,4 +13,4 @@ const urlSchema = new Schema(
 
 const Url = mongoose.model("Url", urlSchema);
 
-export {Url};
+module.exports = {Url};

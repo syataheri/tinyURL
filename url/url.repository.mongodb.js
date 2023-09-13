@@ -1,96 +1,51 @@
-import { ServerError, UrlNotFoundError, ForbiddenError } from '../exceptions.js';
-import { Url } from "../models/url.js";
-import { createCode } from "./utils.js";
+const { ServerError } = require("../exceptions.js");
+const { Url } = require("../models/url.js");
 
-class UrlDataAccess {
+const findURLByLongUrl = async (longUrl) => {
+  try {
+    return Url.findOne({ longUrl });
+  } catch (error) {
+    throw new ServerError(error);
+  }
+};
 
-    async findURLByLongUrl(longUrl) {
-        try {
-            const url = await Url.findOne({ longUrl });
-            return url;
-        } catch (error) {
-            throw new ServerError(error);
-        }
-    }
+const createURL = async ({ longUrl, shortUrl, urlCode, userId }) => {
+  try {
+    const url = new Url({ longUrl, shortUrl, urlCode, userId });
+    return url.save();
+  } catch (error) {
+    throw new ServerError(error);
+  }
+};
 
-    async createURL(longUrl, userId) {
-        try {
-            const urlCode = await createCode(longUrl);
+const getUserURLs = async (userId) => {
+  try {
+    return Url.find({ userId });
+  } catch (error) {
+    throw new ServerError(error);
+  }
+};
 
-            let url = await Url.findOne({ urlCode });
-            while (true) {
-                url = await Url.findOne({ urlCode });
-                if (!url) {
-                    break;
-                }
-            }
-            const baseUrl = process.env.BASE_URL;
-            const shortUrl = baseUrl + "/" + urlCode;
-            url = new Url({ longUrl, shortUrl, urlCode, userId });
-            await url.save();
-            return url;
-        } catch (error) {
-            throw new ServerError(error);
-        }
-    }
+const deleteUrl = async (urlCode) => {
+  try {
+    return Url.deleteOne({urlCode});
+  } catch (error) {
+    throw new ServerError(error);
+  }
+};
 
-    async getUserURLs(userId) {
-        try {
-            const urls = await Url.find({ userId });
-            if (!urls) {
-                throw -1;
-            }
-            return urls;
-        } catch (error) {
-            switch (error) {
-                case -1:
-                    throw new UrlNotFoundError();
-                default:
-                    throw new ServerError(error);
-            }
-        }
-    }
+const findURLByCode = async (urlCode) => {
+  try {
+    return Url.findOne({ urlCode });
+  } catch (error) {
+    throw new ServerError(error);
+  }
+};
 
-    async deleteUrl(code, userId) {
-        try {
-
-            let url = await Url.find({ urlCode: code });
-            url = url[0];
-            if (!url) {
-                throw -1;
-            }
-            if (url.userId.toString() !== userId) {
-                throw 0;
-            }
-            await url.remove();
-        } catch (error) {
-            switch (error) {
-                case -1:
-                    throw new UrlNotFoundError();
-                case 0:
-                    throw new ForbiddenError();
-                default:
-                    throw new ServerError(error);
-            }
-        }
-    }
-
-    async findURLByCode(urlCode) {
-        try {
-            const url = await Url.findOne({ urlCode });
-            if (!url) {
-                throw -1;
-            }
-            return url.longUrl;
-        } catch (error) {
-            switch (error) {
-                case -1:
-                    throw new UrlNotFoundError();
-                default:
-                    throw new ServerError(error);
-            }
-        }
-    }
-}
-
-export { UrlDataAccess }
+module.exports = {
+  findURLByCode,
+  findURLByLongUrl,
+  createURL,
+  deleteUrl,
+  getUserURLs,
+};

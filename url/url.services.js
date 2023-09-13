@@ -1,33 +1,54 @@
-import { UrlDataAccess } from './url.repository.mongodb.js';
+const urlDataAccess = require("./url.repository.mongodb.js");
+const { createCode } = require("./utils.js");
+const { UrlNotFoundError, ForbiddenError } = require("../exceptions.js");
 
-class UrlService {
+const createShortURL = async (longUrl, userId) => {
+  let url = await urlDataAccess.findURLByLongUrl(longUrl);
+  if (url) {
+    return url;
+  }
+  let urlCode;
+  let checkCodeForDuplicate = true;
+  while (checkCodeForDuplicate) {
+    urlCode = await createCode(longUrl);
+    checkCodeForDuplicate = await urlDataAccess.findURLByCode(urlCode);
+  }
+  const baseUrl = process.env.BASE_URL;
+  const shortUrl = baseUrl + "/" + urlCode;
+  return await urlDataAccess.createURL({
+    longUrl,
+    shortUrl,
+    urlCode,
+    userId,
+  });
+};
 
-    constructor() {
-        this.urlDataAccess = new UrlDataAccess;
-    }
+const getUserURLs = async (userId) => {
+  const urls = await urlDataAccess.getUserURLs(userId);
+  if (!urls.length) {
+    return "User does not have any URLs";
+  }
+  return urls;
+};
 
-    async createShortURL(longUrl, userId) {
+const deleteURL = async (code, userId) => {
+  let url = await urlDataAccess.findURLByCode(code);
+  if (!url) {
+    throw new UrlNotFoundError();
+  }
+  if (url.userId.toString() !== userId) {
+    throw new ForbiddenError();
+  }
+  await urlDataAccess.deleteUrl(code);
+  return "URL deleted successfully";
+};
 
-        let url = await this.urlDataAccess.findURLByLongUrl(longUrl);
-        if (url) {
-            return url;
-        }
-        url = await this.urlDataAccess.createURL(longUrl, userId);
-        return url;
-    }
+const redirect = async (code) => {
+  let url = await urlDataAccess.findURLByCode(code);
+  if (!url) {
+    throw new UrlNotFoundError();
+  }
+  return (await urlDataAccess.findURLByCode(code)).longUrl;
+};
 
-    async getUserURLs(userId) {
-        return await this.urlDataAccess.getUserURLs(userId);
-    }
-
-    async deleteURL(code, userId) {
-        return await this.urlDataAccess.deleteUrl(code, userId);
-
-    }
-
-    async redirect(code) {
-        return await this.urlDataAccess.findURLByCode(code);
-    }
-}
-
-export { UrlService }
+module.exports = { createShortURL, getUserURLs, deleteURL, redirect };

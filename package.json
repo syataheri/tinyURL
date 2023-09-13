@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "get long url and code it and make it short",
   "main": "app.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "test": "jest --watchAll",
+    "test": "jest --forceExit --detectOpenHandles --watchAll --maxWorkers=1",
     "start": "nodemon app.js"
   },
   "author": "syataheri",
@@ -19,7 +19,7 @@
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.3.1",
-    "nanoid": "^4.0.0",
+    "nanoid": "^2.1.11",
     "shortid": "^2.2.16",
     "swagger-jsdoc": "^6.2.1",
     "swagger-ui-express": "^4.3.0",
