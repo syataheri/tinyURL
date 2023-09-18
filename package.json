@@ -24,13 +24,13 @@
     "swagger-jsdoc": "^6.2.1",
     "swagger-ui-express": "^4.3.0",
     "ts-jest": "^28.0.2",
-    "winston": "^3.7.2"
-  },
-  "devDependencies": {
+    "winston": "^3.7.2",
     "@types/jest": "^27.5.0",
     "@types/supertest": "^2.0.12",
     "jest": "^28.0.3",
-    "nodemon": "^2.0.16",
     "supertest": "^6.2.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
   }
 }
