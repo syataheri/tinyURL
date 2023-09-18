@@ -8,7 +8,7 @@ const user = { email: "syamaktaheriewww@gmail.com", password: "2345488787@St" };
 // clear database before starting tests
 
 beforeAll(async () => {
-  jest.setTimeout(4000); // timeout for time that internet connection is
+  jest.setTimeout(30000); // Increase timeout in case internet connection was slow
   await User.deleteMany();
   await Url.deleteMany();
 });
