@@ -1,7 +1,8 @@
-const supertest  = require( "supertest" );
-const { app }  = require( "../app" );
-const { User }  = require( "../models/user" );
-const { Url }  = require( "../models/url" );
+const supertest = require("supertest");
+const { app } = require("../app");
+const { User } = require("../models/user");
+const { Url } = require("../models/url");
+const { connectMongonDB } = require("../config/db");
 
 const user = { email: "syamaktaheriewww@gmail.com", password: "2345488787@St" };
 
@@ -73,7 +74,7 @@ describe("POST /login", () => {
       .send({
         username: "john",
         email: user.email,
-        password: "23454sdsd$T"
+        password: "23454sdsd$T",
       });
     expect(response.status).toBe(401);
   });
@@ -166,11 +167,8 @@ describe("DELETE /delete/:code", () => {
       .set("Authorization", token);
     expect(response.status).toBe(202);
   });
+});
 
-  // it("given the code is wrong and url not found ,responds with 404", async () => {
-  //   const response = await supertest(app)
-  //     .delete(`/api/url/delete/${code}`)
-  //     .set("Authorization", token + "wrong");
-  //   expect(response.status).toBe(401);
-  // });
+afterAll(async () => {
+  connectMongonDB.connection.close();
 });
