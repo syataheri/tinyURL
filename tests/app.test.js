@@ -1,25 +1,25 @@
 const supertest = require("supertest");
+const mongoose  = require( "mongoose" );
 const { app } = require("../app");
 const { User } = require("../models/user");
 const { Url } = require("../models/url");
-const { connectMongonDB } = require("../config/db");
 
 const user = { email: "syamaktaheriewww@gmail.com", password: "2345488787@St" };
+const request = supertest.agent(app)
 
 // clear database before starting tests
 
 beforeAll(async () => {
   jest.setTimeout(30000); // Increase timeout in case internet connection was slow
-  await User.deleteMany();
-  await Url.deleteMany();
 });
 
-// testing signup user and check various state of respond
+let token, code;
 
+// testing signup user and check various state of respond
 describe("POST /signup", () => {
-  let token, code;
+  jest.setTimeout(30000);
   it("given the user succussefully saved to mongodb, responds with 201", async () => {
-    const response = await supertest(app)
+    const response = await request
       .post("/api/auth/signup")
       .type("json")
       .send(user);
@@ -27,7 +27,7 @@ describe("POST /signup", () => {
   });
 
   it("given the user already exist, responds with 409", async () => {
-    const response = await supertest(app)
+    const response = await request
       .post("/api/auth/signup")
       .type("json")
       .send(user);
@@ -35,7 +35,7 @@ describe("POST /signup", () => {
   });
 
   it("given the user data is not valid, responds with 406", async () => {
-    const response = await supertest(app)
+    const response = await request
       .post("/api/auth/signup")
       .type("json")
       .send({ email: "sya1gmail.com", password: "234548" });
@@ -47,7 +47,7 @@ describe("POST /signup", () => {
 
 describe("POST /login", () => {
   it("given the user exist and password is true, responds with 200", async () => {
-    const response = await supertest(app)
+    const response = await request
       .post("/api/auth/login")
       .type("json")
       .send(user);
@@ -56,7 +56,7 @@ describe("POST /login", () => {
   });
 
   it("given the email does not exist, responds with 404", async () => {
-    const response = await supertest(app)
+    const response = await request
       .post("/api/auth/login")
       .type("json")
       .send({
@@ -68,7 +68,7 @@ describe("POST /login", () => {
   });
 
   it("given the password is wrong, responds with 404", async () => {
-    const response = await supertest(app)
+    const response = await request
       .post("/api/auth/login")
       .type("json")
       .send({
@@ -84,7 +84,7 @@ describe("POST /login", () => {
 
 describe("POST /shorten", () => {
   it("given the url shorten and saved to mongodb ,responds with 201", async () => {
-    const response = await supertest(app)
+    const response = await request
       .post("/api/url/shorten")
       .set("Authorization", token)
       .type("json")
@@ -96,7 +96,7 @@ describe("POST /shorten", () => {
     code = JSON.parse(response.text).code;
   });
   it("given data input is not valid, responds with 406", async () => {
-    const response = await supertest(app)
+    const response = await request
       .post("/api/url/shorten")
       .set("Authorization", token)
       .type("json")
@@ -107,7 +107,7 @@ describe("POST /shorten", () => {
     expect(response.status).toBe(406);
   });
   it("given the token is wrong, responds with 401", async () => {
-    const response = await supertest(app)
+    const response = await request
       .post("/api/url/shorten")
       .set("Authorization", token + "wrong")
       .type("json")
@@ -123,14 +123,14 @@ describe("POST /shorten", () => {
 
 describe("GET /urls", () => {
   it("given the user has url and authorized, responds with 200", async () => {
-    const response = await supertest(app)
+    const response = await request
       .get(`/api/url`)
       .set("Authorization", token);
     expect(response.status).toBe(200);
   });
 
   it("given the user has url but not authorized, responds with 404", async () => {
-    const response = await supertest(app)
+    const response = await request
       .get(`/api/url`)
       .set("Authorization", token + "wrong");
     expect(response.status).toBe(401);
@@ -141,12 +141,12 @@ describe("GET /urls", () => {
 
 describe("GET /:code", () => {
   it("given the code is exist, responds with 302", async () => {
-    const response = await supertest(app).get("/" + code);
+    const response = await request.get("/" + code);
     expect(response.status).toBe(302);
   });
 
   it("given the code is not exist, responds with 404", async () => {
-    const response = await supertest(app).get("/wrong" + code);
+    const response = await request.get("/wrong" + code);
     expect(response.status).toBe(404);
   });
 });
@@ -155,14 +155,14 @@ describe("GET /:code", () => {
 
 describe("DELETE /delete/:code", () => {
   it("given the code is wrong and url not found ,responds with 404", async () => {
-    const response = await supertest(app)
+    const response = await request
       .delete(`/api/url/delete/${code}wrong`)
       .set("Authorization", token);
     expect(response.status).toBe(404);
   });
 
   it("given the url find and delete ,responds with 202", async () => {
-    const response = await supertest(app)
+    const response = await request
       .delete(`/api/url/delete/${code}`)
       .set("Authorization", token);
     expect(response.status).toBe(202);
@@ -170,5 +170,7 @@ describe("DELETE /delete/:code", () => {
 });
 
 afterAll(async () => {
-  connectMongonDB.connection.close();
+  await User.deleteMany();
+  await Url.deleteMany();
+  mongoose.disconnect();
 });
