@@ -154,14 +154,14 @@ describe("GET /:code", () => {
 // testing deleting a URL and check various state of respond
 
 describe("DELETE /delete/:code", () => {
-  it("given the code is wrong and url not found ,responds with 404", async () => {
+  it("given the code is wrong and url not found, responds with 404", async () => {
     const response = await request
       .delete(`/api/url/delete/${code}wrong`)
       .set("Authorization", token);
     expect(response.status).toBe(404);
   });
 
-  it("given the url find and delete ,responds with 202", async () => {
+  it("given the url will be found and deleted, responds with 202", async () => {
     const response = await request
       .delete(`/api/url/delete/${code}`)
       .set("Authorization", token);
