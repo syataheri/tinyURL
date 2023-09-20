@@ -1,4 +1,5 @@
 const dotenv  = require( "dotenv" );
+const logger = require("morgan");
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ const app = express();
 
 
 app.use(express.json());
-
+app.use(logger("dev"));
 
 //importing routes
 const { urlRouter }  = require( "./controller/url.js" );
