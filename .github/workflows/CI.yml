@@ -26,8 +26,9 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
-    - uses: mr-smithers-excellent/docker-build-push@v6
-      name: Build & push Docker image
+    - name: Build & push Docker image 
+      if: matrix.node-version == '18.x'
+      uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: syamak/tinyurl
         registry: docker.io
